@@ -1,24 +1,24 @@
 'use client';
 
+import type { Vote } from '@/lib/db/schema';
+import { cn } from '@/lib/utils';
+import { UseChatHelpers } from '@ai-sdk/react';
 import type { UIMessage } from 'ai';
 import cx from 'classnames';
+import equal from 'fast-deep-equal';
 import { AnimatePresence, motion } from 'framer-motion';
 import { memo, useState } from 'react';
-import type { Vote } from '@/lib/db/schema';
 import { DocumentToolCall, DocumentToolResult } from './document';
-import { PencilEditIcon, SparklesIcon } from './icons';
+import { DocumentPreview } from './document-preview';
+import { DoctorIcon } from './icons';
 import { Markdown } from './markdown';
 import { MessageActions } from './message-actions';
+import { MessageEditor } from './message-editor';
+import { MessageReasoning } from './message-reasoning';
 import { PreviewAttachment } from './preview-attachment';
-import { Weather } from './weather';
-import equal from 'fast-deep-equal';
-import { cn } from '@/lib/utils';
 import { Button } from './ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
-import { MessageEditor } from './message-editor';
-import { DocumentPreview } from './document-preview';
-import { MessageReasoning } from './message-reasoning';
-import { UseChatHelpers } from '@ai-sdk/react';
+import { Weather } from './weather';
 
 const PurePreviewMessage = ({
   chatId,
@@ -60,7 +60,7 @@ const PurePreviewMessage = ({
           {message.role === 'assistant' && (
             <div className="size-8 flex items-center rounded-full justify-center ring-1 shrink-0 ring-border bg-background">
               <div className="translate-y-px">
-                <SparklesIcon size={14} />
+                <DoctorIcon size={20} />
               </div>
             </div>
           )}
@@ -109,7 +109,7 @@ const PurePreviewMessage = ({
                                 setMode('edit');
                               }}
                             >
-                              <PencilEditIcon />
+                              {/* <PencilEditIcon /> */}
                             </Button>
                           </TooltipTrigger>
                           <TooltipContent>Edit message</TooltipContent>
@@ -262,7 +262,7 @@ export const ThinkingMessage = () => {
         )}
       >
         <div className="size-8 flex items-center rounded-full justify-center ring-1 shrink-0 ring-border">
-          <SparklesIcon size={14} />
+          <DoctorIcon size={20} />
         </div>
 
         <div className="flex flex-col gap-2 w-full">

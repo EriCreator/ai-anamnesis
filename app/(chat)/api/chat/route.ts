@@ -1,12 +1,11 @@
-import {
-  UIMessage,
-  appendResponseMessages,
-  createDataStreamResponse,
-  smoothStream,
-  streamText,
-} from 'ai';
 import { auth } from '@/app/(auth)/auth';
 import { systemPrompt } from '@/lib/ai/prompts';
+import { myProvider } from '@/lib/ai/providers';
+import { createDocument } from '@/lib/ai/tools/create-document';
+import { getWeather } from '@/lib/ai/tools/get-weather';
+import { requestSuggestions } from '@/lib/ai/tools/request-suggestions';
+import { updateDocument } from '@/lib/ai/tools/update-document';
+import { isProductionEnvironment } from '@/lib/constants';
 import {
   deleteChatById,
   getChatById,
@@ -18,13 +17,14 @@ import {
   getMostRecentUserMessage,
   getTrailingMessageId,
 } from '@/lib/utils';
+import {
+  UIMessage,
+  appendResponseMessages,
+  createDataStreamResponse,
+  smoothStream,
+  streamText,
+} from 'ai';
 import { generateTitleFromUserMessage } from '../../actions';
-import { createDocument } from '@/lib/ai/tools/create-document';
-import { updateDocument } from '@/lib/ai/tools/update-document';
-import { requestSuggestions } from '@/lib/ai/tools/request-suggestions';
-import { getWeather } from '@/lib/ai/tools/get-weather';
-import { isProductionEnvironment } from '@/lib/constants';
-import { myProvider } from '@/lib/ai/providers';
 
 export const maxDuration = 60;
 

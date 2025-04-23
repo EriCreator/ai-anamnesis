@@ -4,7 +4,10 @@ import { useCopyToClipboard } from 'usehooks-ts';
 
 import type { Vote } from '@/lib/db/schema';
 
-import { CopyIcon, ThumbDownIcon, ThumbUpIcon } from './icons';
+import equal from 'fast-deep-equal';
+import { memo } from 'react';
+import { toast } from 'sonner';
+import { CopyIcon } from './icons';
 import { Button } from './ui/button';
 import {
   Tooltip,
@@ -12,9 +15,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from './ui/tooltip';
-import { memo } from 'react';
-import equal from 'fast-deep-equal';
-import { toast } from 'sonner';
 
 export function PureMessageActions({
   chatId,
@@ -63,7 +63,7 @@ export function PureMessageActions({
           <TooltipContent>Copy</TooltipContent>
         </Tooltip>
 
-        <Tooltip>
+        {/* <Tooltip>
           <TooltipTrigger asChild>
             <Button
               data-testid="message-upvote"
@@ -167,7 +167,7 @@ export function PureMessageActions({
             </Button>
           </TooltipTrigger>
           <TooltipContent>Downvote Response</TooltipContent>
-        </Tooltip>
+        </Tooltip> */}
       </div>
     </TooltipProvider>
   );
