@@ -1,0 +1,331 @@
+'use client';
+
+import { format } from 'date-fns';
+import { Filter, Search } from 'lucide-react';
+import { useState } from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
+import { cn } from '@/lib/utils';
+
+// Sample data for reports
+const sampleReports = [
+  {
+    id: 1,
+    type: 'illness',
+    fullName: 'John Smith',
+    ahvNumber: '756.1234.5678.90',
+    urgency: 'high (immediate)',
+    summary:
+      'Patient reports severe abdominal pain with fever and vomiting for the past 12 hours. No improvement with over-the-counter medication.',
+    symptoms: 'abdominal pain, fever, vomiting',
+    suggestedMedicaments: 'Antiemetic, pain relief',
+    suggestedTreatment:
+      'Immediate evaluation for appendicitis or other acute abdominal conditions.',
+    createdAt: '2023-04-24T08:30:00',
+  },
+  {
+    id: 2,
+    type: 'illness',
+    fullName: 'Emma Johnson',
+    ahvNumber: '756.9876.5432.10',
+    urgency: 'medium (within 24h)',
+    summary:
+      'Patient reports sharp chest pain when coughing and a metallic smell since yesterday, with no other symptoms reported.',
+    symptoms: 'chest pain, metallic smell',
+    suggestedMedicaments: 'null',
+    suggestedTreatment:
+      'Further examination and potential chest X-ray to rule out respiratory issues.',
+    createdAt: '2023-04-23T14:15:00',
+  },
+  {
+    id: 3,
+    type: 'follow-up',
+    fullName: 'Michael Brown',
+    ahvNumber: '756.2468.1357.90',
+    urgency: 'low (routine)',
+    summary:
+      'Follow-up appointment for diabetes management. Patient reports stable blood sugar levels with current medication regimen.',
+    symptoms: 'none reported',
+    suggestedMedicaments: 'Continue current diabetes medication',
+    suggestedTreatment: 'Regular monitoring and lifestyle counseling.',
+    createdAt: '2023-04-22T10:45:00',
+  },
+  {
+    id: 4,
+    type: 'illness',
+    fullName: 'Sophia Garcia',
+    ahvNumber: '756.1357.2468.90',
+    urgency: 'medium (within 24h)',
+    summary:
+      'Patient reports persistent headache for 3 days with sensitivity to light. No fever or other symptoms noted.',
+    symptoms: 'headache, photosensitivity',
+    suggestedMedicaments: 'Analgesics',
+    suggestedTreatment: 'Evaluation for migraine or tension headache.',
+    createdAt: '2023-04-21T16:20:00',
+  },
+  {
+    id: 5,
+    type: 'emergency',
+    fullName: 'William Taylor',
+    ahvNumber: '756.8642.9753.10',
+    urgency: 'high (immediate)',
+    summary:
+      'Patient experienced syncope episode while exercising. Reports dizziness and palpitations before the event.',
+    symptoms: 'syncope, dizziness, palpitations',
+    suggestedMedicaments: 'null',
+    suggestedTreatment:
+      'Immediate cardiac evaluation including ECG and cardiac enzymes.',
+    createdAt: '2023-04-20T09:10:00',
+  },
+];
+
+// Urgency badge color mapping
+const urgencyColors = {
+  'high (immediate)': 'destructive',
+  'medium (within 24h)': 'yellow',
+  'low (routine)': 'green',
+};
+
+export default function DoctorDashboard({
+  initialReports,
+}: {
+  initialReports: {
+    id: string;
+    type: string;
+    fullName: string;
+    ahvNumber: string;
+    urgency: string;
+    summary: string;
+    symptoms: string;
+    suggestedMedicaments: string;
+    suggestedTreatment: string;
+    userId: string;
+    createdAt: Date;
+  }[];
+}) {
+  const allReports = [...sampleReports, ...initialReports];
+  const [reports, setReports] = useState(allReports);
+  const [selectedReport, setSelectedReport] = useState(allReports[0]);
+  const [urgencyFilter, setUrgencyFilter] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Filter reports based on urgency, date, and search query
+  const filteredReports = reports.filter((report) => {
+    // Filter by urgency
+    if (urgencyFilter !== 'all' && report.urgency !== urgencyFilter) {
+      return false;
+    }
+
+    // Filter by search query
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      return (
+        report.fullName.toLowerCase().includes(query) ||
+        report.summary.toLowerCase().includes(query) ||
+        report.symptoms.toLowerCase().includes(query)
+      );
+    }
+
+    return true;
+  });
+
+  return (
+    <div className="flex h-screen bg-background">
+      {/* Sidebar */}
+      <div className="w-[250px] border-r flex flex-col h-full">
+        <div className="p-4 border-b">
+          <h2 className="font-semibold text-lg mb-4">Patient Reports</h2>
+
+          {/* Search */}
+          <div className="relative mb-4">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search reports..."
+              className="pl-8"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+
+          {/* Filters */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Filter className="h-4 w-4" />
+              <span className="text-sm font-medium">Filters</span>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="urgency-filter">Urgency</Label>
+              <Select value={urgencyFilter} onValueChange={setUrgencyFilter}>
+                <SelectTrigger id="urgency-filter">
+                  <SelectValue placeholder="Select urgency" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All urgencies</SelectItem>
+                  <SelectItem value="high (immediate)">
+                    High (immediate)
+                  </SelectItem>
+                  <SelectItem value="medium (within 24h)">
+                    Medium (within 24h)
+                  </SelectItem>
+                  <SelectItem value="low (routine)">Low (routine)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </div>
+
+        {/* Report list */}
+        <div className="flex-1 overflow-auto">
+          {filteredReports.length === 0 ? (
+            <div className="p-4 text-center text-muted-foreground">
+              No reports match your filters
+            </div>
+          ) : (
+            filteredReports.map((report) => (
+              <div
+                key={report.id}
+                className={cn(
+                  'p-3 border-b cursor-pointer hover:bg-muted/50 transition-colors',
+                  selectedReport.id === report.id ? 'bg-muted' : '',
+                )}
+                onClick={() => setSelectedReport(report)}
+              >
+                <div className="flex justify-between items-start mb-1">
+                  <span className="font-medium">{report.fullName}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {format(new Date(report.createdAt), 'MMM d, HH:mm')}
+                  </span>
+                </div>
+                <Badge
+                  variant={
+                    (urgencyColors[
+                      report.urgency as keyof typeof urgencyColors
+                    ] as any) || 'default'
+                  }
+                  className="mb-1"
+                >
+                  {report.urgency}
+                </Badge>
+                <p className="text-sm text-muted-foreground line-clamp-2">
+                  {report.summary}
+                </p>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+
+      {/* Main content */}
+      <div className="flex-1 p-6 overflow-auto">
+        <div className="max-w-3xl mx-auto">
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-2xl font-bold">Patient Report</h1>
+            <Badge
+              variant={
+                (urgencyColors[
+                  selectedReport.urgency as keyof typeof urgencyColors
+                ] as any) || 'default'
+              }
+              className="text-sm"
+            >
+              {selectedReport.urgency}
+            </Badge>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            <div>
+              <h3 className="text-sm font-medium text-muted-foreground mb-1">
+                Patient Name
+              </h3>
+              <p className="font-medium">{selectedReport.fullName}</p>
+            </div>
+            <div>
+              <h3 className="text-sm font-medium text-muted-foreground mb-1">
+                AHV Number
+              </h3>
+              <p className="font-medium">{selectedReport.ahvNumber}</p>
+            </div>
+            <div>
+              <h3 className="text-sm font-medium text-muted-foreground mb-1">
+                Report Type
+              </h3>
+              <p className="font-medium capitalize">{selectedReport.type}</p>
+            </div>
+            <div>
+              <h3 className="text-sm font-medium text-muted-foreground mb-1">
+                Created At
+              </h3>
+              <p className="font-medium">
+                {format(new Date(selectedReport.createdAt), "PPP 'at' HH:mm")}
+              </p>
+            </div>
+          </div>
+
+          <Separator className="my-6" />
+
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Summary</h3>
+              <p className="text-muted-foreground">{selectedReport.summary}</p>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Symptoms</h3>
+              <div className="flex flex-wrap gap-2">
+                {selectedReport.symptoms.split(',').map((symptom) => {
+                  const trimmedSymptom = symptom.trim();
+                  return (
+                    <Badge
+                      key={trimmedSymptom}
+                      variant="outline"
+                      className="bg-muted"
+                    >
+                      {trimmedSymptom}
+                    </Badge>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold mb-2">
+                Suggested Medicaments
+              </h3>
+              <p className="text-muted-foreground">
+                {selectedReport.suggestedMedicaments === 'null'
+                  ? 'None suggested'
+                  : selectedReport.suggestedMedicaments}
+              </p>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold mb-2">
+                Suggested Treatment
+              </h3>
+              <p className="text-muted-foreground">
+                {selectedReport.suggestedTreatment}
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-8 flex gap-4">
+            <Button>Schedule Appointment</Button>
+            <Button variant="outline">Contact Patient</Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

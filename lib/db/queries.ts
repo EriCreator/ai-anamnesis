@@ -442,3 +442,69 @@ export async function saveAnamnesisReport(
     throw error;
   }
 }
+
+export async function getAllAnamnesisReports({
+  limit,
+  startingAfter,
+  endingBefore,
+}: {
+  limit: number;
+  startingAfter: string | null;
+  endingBefore: string | null;
+}) {
+  try {
+    const extendedLimit = limit + 1;
+
+    const query = (whereCondition?: SQL<any>) =>
+      db
+        .select()
+        .from(anamnesisReport)
+        .where(whereCondition || undefined)
+        .orderBy(desc(anamnesisReport.createdAt))
+        .limit(extendedLimit);
+
+    let filteredReports: Array<AnamnesisReport> = [];
+
+    if (startingAfter) {
+      const [selectedReport] = await db
+        .select()
+        .from(anamnesisReport)
+        .where(eq(anamnesisReport.id, startingAfter))
+        .limit(1);
+
+      if (!selectedReport) {
+        throw new Error(`Report with id ${startingAfter} not found`);
+      }
+
+      filteredReports = await query(
+        gt(anamnesisReport.createdAt, selectedReport.createdAt),
+      );
+    } else if (endingBefore) {
+      const [selectedReport] = await db
+        .select()
+        .from(anamnesisReport)
+        .where(eq(anamnesisReport.id, endingBefore))
+        .limit(1);
+
+      if (!selectedReport) {
+        throw new Error(`Report with id ${endingBefore} not found`);
+      }
+
+      filteredReports = await query(
+        lt(anamnesisReport.createdAt, selectedReport.createdAt),
+      );
+    } else {
+      filteredReports = await query();
+    }
+
+    const hasMore = filteredReports.length > limit;
+
+    return {
+      reports: hasMore ? filteredReports.slice(0, limit) : filteredReports,
+      hasMore,
+    };
+  } catch (error) {
+    console.error('Failed to get anamnesis reports from database', error);
+    throw error;
+  }
+}

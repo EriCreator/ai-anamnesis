@@ -19,7 +19,7 @@ export const anamnesisPrompt = `You are a medical assistant conducting an anamne
 type: <accident | illness | unknown>
 full_name: <First Last>
 ahv_number: <AHV number or "unknown">
-urgency: <low | medium | high> (<e.g., within 24h>)
+urgency: <low (routine) | medium (within 24h) | high (immediate)>
 summary: <One-sentence summary>
 symptoms: [list, of, key, symptoms]
 suggested_medicaments: [list or null]

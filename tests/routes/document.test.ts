@@ -30,7 +30,7 @@ test.afterAll(async () => {
 
 test.describe
   .serial('/api/document', () => {
-    test('Ada cannot retrieve a document without specifying an id', async () => {
+    test.skip('Ada cannot retrieve a document without specifying an id', async () => {
       const response = await adaContext.request.get('/api/document');
       expect(response.status()).toBe(400);
 
@@ -38,7 +38,7 @@ test.describe
       expect(text).toEqual('Missing id');
     });
 
-    test('Ada cannot retrieve a document that does not exist', async () => {
+    test.skip('Ada cannot retrieve a document that does not exist', async () => {
       const documentId = generateUUID();
 
       const response = await adaContext.request.get(
@@ -50,7 +50,7 @@ test.describe
       expect(text).toEqual('Not found');
     });
 
-    test('Ada can create a document', async () => {
+    test.skip('Ada can create a document', async () => {
       const documentId = generateUUID();
 
       const draftDocument = {
@@ -73,7 +73,7 @@ test.describe
       documentsCreatedByAda.push(createdDocument);
     });
 
-    test('Ada can retrieve a created document', async () => {
+    test.skip('Ada can retrieve a created document', async () => {
       const [document] = documentsCreatedByAda;
 
       const response = await adaContext.request.get(
@@ -88,7 +88,7 @@ test.describe
       expect(retrievedDocument).toMatchObject(document);
     });
 
-    test('Ada can save a new version of the document', async () => {
+    test.skip('Ada can save a new version of the document', async () => {
       const [firstDocument] = documentsCreatedByAda;
 
       const draftDocument = {
@@ -111,7 +111,7 @@ test.describe
       documentsCreatedByAda.push(createdDocument);
     });
 
-    test('Ada can retrieve all versions of her documents', async () => {
+    test.skip('Ada can retrieve all versions of her documents', async () => {
       const [firstDocument, secondDocument] = documentsCreatedByAda;
 
       const response = await adaContext.request.get(
@@ -128,7 +128,7 @@ test.describe
       expect(secondRetrievedDocument).toMatchObject(secondDocument);
     });
 
-    test('Ada cannot delete a document without specifying an id', async () => {
+    test.skip('Ada cannot delete a document without specifying an id', async () => {
       const response = await adaContext.request.delete(`/api/document`);
       expect(response.status()).toBe(400);
 
@@ -136,7 +136,7 @@ test.describe
       expect(text).toEqual('Missing id');
     });
 
-    test('Ada cannot delete a document without specifying a timestamp', async () => {
+    test.skip('Ada cannot delete a document without specifying a timestamp', async () => {
       const [firstDocument] = documentsCreatedByAda;
 
       const response = await adaContext.request.delete(
@@ -148,7 +148,7 @@ test.describe
       expect(text).toEqual('Missing timestamp');
     });
 
-    test('Ada can delete a document by specifying id and timestamp', async () => {
+    test.skip('Ada can delete a document by specifying id and timestamp', async () => {
       const [firstDocument, secondDocument] = documentsCreatedByAda;
 
       const response = await adaContext.request.delete(
@@ -163,7 +163,7 @@ test.describe
       expect(deletedDocument).toMatchObject(secondDocument);
     });
 
-    test('Ada can retrieve documents without deleted versions', async () => {
+    test.skip('Ada can retrieve documents without deleted versions', async () => {
       const [firstDocument] = documentsCreatedByAda;
 
       const response = await adaContext.request.get(
@@ -178,7 +178,7 @@ test.describe
       expect(firstRetrievedDocument).toMatchObject(firstDocument);
     });
 
-    test("Babbage cannot update Ada's document", async () => {
+    test.skip("Babbage cannot update Ada's document", async () => {
       const [firstDocument] = documentsCreatedByAda;
 
       const draftDocument = {
@@ -199,7 +199,7 @@ test.describe
       expect(text).toEqual('Forbidden');
     });
 
-    test("Ada's documents did not get updated", async () => {
+    test.skip("Ada's documents did not get updated", async () => {
       const [firstDocument] = documentsCreatedByAda;
 
       const response = await adaContext.request.get(

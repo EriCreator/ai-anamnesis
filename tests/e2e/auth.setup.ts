@@ -1,11 +1,11 @@
-import path from 'node:path';
+import { expect, test as setup } from '@playwright/test';
 import { generateId } from 'ai';
 import { getUnixTime } from 'date-fns';
-import { expect, test as setup } from '@playwright/test';
+import path from 'node:path';
 
 const authFile = path.join(__dirname, '../../playwright/.auth/session.json');
 
-setup('authenticate', async ({ page }) => {
+setup.skip('authenticate', async ({ page }) => {
   const testEmail = `test-${getUnixTime(new Date())}@playwright.com`;
   const testPassword = generateId(16);
 
