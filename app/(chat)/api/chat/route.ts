@@ -9,10 +9,12 @@ import { isProductionEnvironment } from '@/lib/constants';
 import {
   deleteChatById,
   getChatById,
+  saveAnamnesisReport,
   saveChat,
   saveMessages,
 } from '@/lib/db/queries';
 import {
+  extractAnamnesis,
   generateUUID,
   getMostRecentUserMessage,
   getTrailingMessageId,
@@ -81,6 +83,10 @@ export async function POST(request: Request) {
 
     return createDataStreamResponse({
       execute: (dataStream) => {
+        // Create variables to store original text and track detection state
+        let originalContent = '';
+        let foundAnamnesis = false;
+
         const result = streamText({
           model: myProvider.languageModel(selectedChatModel),
           system: systemPrompt({ selectedChatModel }),
@@ -90,12 +96,73 @@ export async function POST(request: Request) {
             selectedChatModel === 'chat-model-reasoning'
               ? []
               : [
-                  'getWeather',
-                  'createDocument',
-                  'updateDocument',
-                  'requestSuggestions',
+                  // 'getWeather',
+                  // 'createDocument',
+                  // 'updateDocument',
+                  // 'requestSuggestions',
                 ],
-          experimental_transform: smoothStream({ chunking: 'word' }),
+          // experimental_transform: smoothStream({ chunking: 'word' }),
+          // Custom transform to intercept and replace anamnesis reports
+          experimental_transform: (() => {
+            // Create our custom transform
+            const anamnesisTransform = new TransformStream({
+              transform(chunk, controller) {
+                // Handle text-delta chunks which contain actual text content
+                if (chunk.type === 'text-delta' && chunk.textDelta) {
+                  // Save original content for database processing
+                  originalContent += chunk.textDelta;
+
+                  // Check if accumulated content contains the marker
+                  if (
+                    originalContent.includes('<ANAMNESIS_REPORT>') &&
+                    !foundAnamnesis
+                  ) {
+                    // First time we've found the marker
+                    console.log('Anamnesis report found');
+                    foundAnamnesis = true;
+                    controller.enqueue({
+                      type: 'text-delta',
+                      textDelta:
+                        'Your information was forwarded to the doctor. Thank you for providing these details.',
+                    });
+                  }
+                  // If we've already found the marker, don't pass through more content
+                  else if (foundAnamnesis) {
+                    // Don't enqueue anything
+                    return;
+                  }
+                  // Normal text before finding a marker
+                  else {
+                    controller.enqueue(chunk);
+                  }
+                }
+                // For step-start, step-finish, and finish chunks, pass through unchanged
+                else {
+                  controller.enqueue(chunk);
+
+                  // For finish chunks, check if we have a complete report
+                  if (chunk.type === 'finish' && foundAnamnesis) {
+                    console.log(
+                      'Finished with anamnesis detected, full content length:',
+                      originalContent.length,
+                    );
+                  }
+                }
+              },
+            });
+
+            // Return function that applies both our transform and smoothing
+            return (chunk) => {
+              // First get the smooth transform
+              const smooth = smoothStream({ chunking: 'word' })(chunk);
+
+              // Chain our transform after the smooth transform
+              return {
+                writable: smooth.writable,
+                readable: smooth.readable.pipeThrough(anamnesisTransform),
+              };
+            };
+          })(),
           experimental_generateMessageId: generateUUID,
           tools: {
             getWeather,
@@ -123,6 +190,51 @@ export async function POST(request: Request) {
                   messages: [userMessage],
                   responseMessages: response.messages,
                 });
+
+                // console.log('response', response);
+                // console.log('response.messages', response.messages);
+                // console.log('assistantMessage', assistantMessage);
+                // console.log('assistantId', assistantId);
+                // console.log('assistantMessage.parts', assistantMessage.parts);
+
+                // const text =
+                //   assistantMessage.parts?.find(
+                //     (p): p is { type: 'text'; text: string } =>
+                //       p.type === 'text' && 'text' in p,
+                //   )?.text ?? '';
+
+                if (
+                  foundAnamnesis &&
+                  originalContent.includes('<ANAMNESIS_REPORT>')
+                ) {
+                  console.log('Anamnesis report found');
+                  console.log('text', originalContent);
+                  const report = extractAnamnesis(originalContent);
+                  if (!report) {
+                    console.error('No anamnesis report found');
+                    return;
+                  }
+                  await saveAnamnesisReport({
+                    ...report,
+                    userId: session.user.id,
+                  });
+                  console.log('report', report);
+
+                  // Modify the message parts to contain our replacement message
+                  if (foundAnamnesis) {
+                    assistantMessage.parts = assistantMessage.parts?.map(
+                      (part) => {
+                        if (part.type === 'text') {
+                          return {
+                            ...part,
+                            text: 'Your information was forwarded to the doctor. Thank you for providing these details.',
+                          };
+                        }
+                        return part;
+                      },
+                    );
+                  }
+                }
 
                 await saveMessages({
                   messages: [

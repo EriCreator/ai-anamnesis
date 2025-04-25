@@ -17,6 +17,8 @@ import postgres from 'postgres';
 
 import type { ArtifactKind } from '@/components/artifact';
 import {
+  anamnesisReport,
+  AnamnesisReport,
   chat,
   document,
   message,
@@ -416,6 +418,27 @@ export async function updateChatVisiblityById({
     return await db.update(chat).set({ visibility }).where(eq(chat.id, chatId));
   } catch (error) {
     console.error('Failed to update chat visibility in database');
+    throw error;
+  }
+}
+
+export async function saveAnamnesisReport(
+  data: Omit<AnamnesisReport, 'id' | 'createdAt'>,
+) {
+  try {
+    const result = await db.insert(anamnesisReport).values({
+      type: data.type,
+      fullName: data.fullName,
+      ahvNumber: data.ahvNumber,
+      urgency: data.urgency,
+      summary: data.summary,
+      symptoms: data.symptoms,
+      suggestedMedicaments: data.suggestedMedicaments,
+      suggestedTreatment: data.suggestedTreatment,
+      userId: data.userId,
+    });
+  } catch (error) {
+    console.error('Failed to save anamnesis report in database', error);
     throw error;
   }
 }

@@ -1,14 +1,14 @@
 import type { InferSelectModel } from 'drizzle-orm';
 import {
-  pgTable,
-  varchar,
-  timestamp,
-  json,
-  uuid,
-  text,
-  primaryKey,
-  foreignKey,
   boolean,
+  foreignKey,
+  json,
+  pgTable,
+  primaryKey,
+  text,
+  timestamp,
+  uuid,
+  varchar,
 } from 'drizzle-orm/pg-core';
 
 export const user = pgTable('User', {
@@ -150,3 +150,21 @@ export const suggestion = pgTable(
 );
 
 export type Suggestion = InferSelectModel<typeof suggestion>;
+
+export const anamnesisReport = pgTable('AnamnesisReport', {
+  id: uuid('id').primaryKey().notNull().defaultRandom(),
+  type: varchar('type').notNull(),
+  fullName: varchar('fullName').notNull(),
+  ahvNumber: varchar('ahvNumber').notNull(),
+  urgency: varchar('urgency').notNull(),
+  summary: text('summary').notNull(),
+  symptoms: text('symptoms').notNull(),
+  suggestedMedicaments: text('suggestedMedicaments').notNull(),
+  suggestedTreatment: text('suggestedTreatment').notNull(),
+  userId: uuid('userId')
+    .notNull()
+    .references(() => user.id),
+  createdAt: timestamp('createdAt').notNull().defaultNow(),
+});
+
+export type AnamnesisReport = InferSelectModel<typeof anamnesisReport>;

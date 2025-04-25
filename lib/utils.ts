@@ -5,7 +5,7 @@ import {
   type Message,
   type UIMessage,
 } from 'ai';
-import { type ClassValue, clsx } from 'clsx';
+import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
 import type { Document } from '@/lib/db/schema';
@@ -170,4 +170,36 @@ export function generateDummyPassword() {
   const hash = hashSync(password, salt);
 
   return hash;
+}
+
+interface AnamnesisReport {
+  type: string;
+  fullName: string;
+  ahvNumber: string;
+  urgency: string;
+  summary: string;
+  symptoms: string;
+  suggestedMedicaments: string;
+  suggestedTreatment: string;
+}
+
+export function extractAnamnesis(message: string): AnamnesisReport | null {
+  const beforeClose = message.split(/<\/ANAMNESIS_REPORT>/i)[0];
+
+  const grab = (key: string) => {
+    const rx = new RegExp(`${key}:\\s*([\\s\\S]*?)(?=\\n[a-z_]+:\\s*|$)`, 'i');
+    const m = beforeClose.match(rx);
+    return (m ? m[1] : '').trim().replace(/^\[|\]$/g, '');
+  };
+
+  return {
+    type: grab('type'),
+    fullName: grab('full_name'),
+    ahvNumber: grab('ahv_number'),
+    urgency: grab('urgency'),
+    summary: grab('summary'),
+    symptoms: grab('symptoms'),
+    suggestedMedicaments: grab('suggested_medicaments'),
+    suggestedTreatment: grab('suggested_treatment'),
+  };
 }
