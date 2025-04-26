@@ -48,12 +48,35 @@ export async function getUser(email: string): Promise<Array<User>> {
   }
 }
 
-export async function createUser(email: string, password: string) {
+export async function getUserById(id: string): Promise<User> {
+  try {
+    return (await db.select().from(user).where(eq(user.id, id)))[0];
+  } catch (error) {
+    console.error('Failed to get user by id from database');
+    throw error;
+  }
+}
+
+export async function createUser(
+  email: string,
+  password: string,
+  firstName: string,
+  lastName: string,
+  dateOfBirth: string | undefined,
+  ahvNumber: string | undefined,
+) {
   const salt = genSaltSync(10);
   const hash = hashSync(password, salt);
 
   try {
-    return await db.insert(user).values({ email, password: hash });
+    return await db.insert(user).values({
+      email,
+      password: hash,
+      firstName,
+      lastName,
+      dateOfBirth,
+      ahvNumber,
+    });
   } catch (error) {
     console.error('Failed to create user in database');
     throw error;
@@ -426,10 +449,11 @@ export async function saveAnamnesisReport(
   data: Omit<AnamnesisReport, 'id' | 'createdAt'>,
 ) {
   try {
+    const user = await getUserById(data.userId);
     const result = await db.insert(anamnesisReport).values({
       type: data.type,
-      fullName: data.fullName,
-      ahvNumber: data.ahvNumber,
+      fullName: `${user.firstName} ${user.lastName}`,
+      ahvNumber: user.ahvNumber || '',
       urgency: data.urgency,
       summary: data.summary,
       symptoms: data.symptoms,

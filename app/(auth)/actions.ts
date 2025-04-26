@@ -11,6 +11,13 @@ const authFormSchema = z.object({
   password: z.string().min(6),
 });
 
+const registerFormSchema = authFormSchema.extend({
+  firstName: z.string().min(2),
+  lastName: z.string().min(2),
+  dateOfBirth: z.string().optional(),
+  ahvNumber: z.string().optional(),
+});
+
 export interface LoginActionState {
   status: 'idle' | 'in_progress' | 'success' | 'failed' | 'invalid_data';
 }
@@ -56,9 +63,13 @@ export const register = async (
   formData: FormData,
 ): Promise<RegisterActionState> => {
   try {
-    const validatedData = authFormSchema.parse({
+    const validatedData = registerFormSchema.parse({
       email: formData.get('email'),
       password: formData.get('password'),
+      firstName: formData.get('firstName'),
+      lastName: formData.get('lastName'),
+      dateOfBirth: formData.get('dateOfBirth'),
+      ahvNumber: formData.get('ahvNumber'),
     });
 
     const [user] = await getUser(validatedData.email);
@@ -66,7 +77,14 @@ export const register = async (
     if (user) {
       return { status: 'user_exists' } as RegisterActionState;
     }
-    await createUser(validatedData.email, validatedData.password);
+    await createUser(
+      validatedData.email,
+      validatedData.password,
+      validatedData.firstName,
+      validatedData.lastName,
+      validatedData.dateOfBirth || undefined,
+      validatedData.ahvNumber || undefined,
+    );
     await signIn('credentials', {
       email: validatedData.email,
       password: validatedData.password,

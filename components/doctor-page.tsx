@@ -1,7 +1,7 @@
 'use client';
 
 import { format } from 'date-fns';
-import { Filter, Search } from 'lucide-react';
+import { CheckCircle, Filter, Menu, Phone, Search } from 'lucide-react';
 import { useState } from 'react';
 
 import { Badge } from '@/components/ui/badge';
@@ -17,6 +17,12 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
+// Add these imports at the top of the file
+import { TooltipContent, TooltipProvider } from '@radix-ui/react-tooltip';
+import { Moon, Sun } from 'lucide-react';
+import { useTheme } from 'next-themes';
+import { toast } from 'sonner';
+import { Tooltip, TooltipTrigger } from './ui/tooltip';
 
 // Sample data for reports
 const sampleReports = [
@@ -115,10 +121,12 @@ export default function DoctorDashboard({
   }[];
 }) {
   const allReports = [...sampleReports, ...initialReports];
-  const [reports, setReports] = useState(allReports);
+  const [reports, _] = useState(allReports);
   const [selectedReport, setSelectedReport] = useState(allReports[0]);
   const [urgencyFilter, setUrgencyFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { theme, setTheme } = useTheme();
 
   // Filter reports based on urgency, date, and search query
   const filteredReports = reports.filter((report) => {
@@ -143,94 +151,152 @@ export default function DoctorDashboard({
   return (
     <div className="flex h-screen bg-background">
       {/* Sidebar */}
-      <div className="w-[250px] border-r flex flex-col h-full">
-        <div className="p-4 border-b">
-          <h2 className="font-semibold text-lg mb-4">Patient Reports</h2>
+      <div
+        className={`
+          fixed inset-y-0 left-0 z-20 w-[350px] border-r bg-background flex flex-col h-full
+          transition-transform duration-200
+          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}  
+          md:static md:translate-x-0                        
+        `}
+      >
+        <div className="w-[350px] border-r flex flex-col h-full">
+          <div className="p-4 border-b">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="font-semibold text-lg">Patient Reports</h2>
 
-          {/* Search */}
-          <div className="relative mb-4">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search reports..."
-              className="pl-8"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-
-          {/* Filters */}
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <Filter className="h-4 w-4" />
-              <span className="text-sm font-medium">Filters</span>
+              {/* Dark mode toggle button */}
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setTheme(theme === 'dark' ? 'light' : 'dark')
+                      }
+                      className="p-2 rounded-md hover:bg-muted transition-colors"
+                      aria-label="Toggle dark mode"
+                    >
+                      {theme === 'dark' ? (
+                        <Sun className="size-4" />
+                      ) : (
+                        <Moon className="size-4" />
+                      )}
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent
+                    side="right"
+                    align="end"
+                    className="z-50 text-xs font-medium"
+                  >
+                    {theme === 'dark' ? 'Light mode' : 'Dark mode'}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
 
-            <div className="space-y-1.5">
-              <Label htmlFor="urgency-filter">Urgency</Label>
-              <Select value={urgencyFilter} onValueChange={setUrgencyFilter}>
-                <SelectTrigger id="urgency-filter">
-                  <SelectValue placeholder="Select urgency" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All urgencies</SelectItem>
-                  <SelectItem value="high (immediate)">
-                    High (immediate)
-                  </SelectItem>
-                  <SelectItem value="medium (within 24h)">
-                    Medium (within 24h)
-                  </SelectItem>
-                  <SelectItem value="low (routine)">Low (routine)</SelectItem>
-                </SelectContent>
-              </Select>
+            {/* Search */}
+            <div className="relative mb-4">
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search reports..."
+                className="pl-8"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
             </div>
-          </div>
-        </div>
 
-        {/* Report list */}
-        <div className="flex-1 overflow-auto">
-          {filteredReports.length === 0 ? (
-            <div className="p-4 text-center text-muted-foreground">
-              No reports match your filters
-            </div>
-          ) : (
-            filteredReports.map((report) => (
-              <div
-                key={report.id}
-                className={cn(
-                  'p-3 border-b cursor-pointer hover:bg-muted/50 transition-colors',
-                  selectedReport.id === report.id ? 'bg-muted' : '',
-                )}
-                onClick={() => setSelectedReport(report)}
-              >
-                <div className="flex justify-between items-start mb-1">
-                  <span className="font-medium">{report.fullName}</span>
-                  <span className="text-xs text-muted-foreground">
-                    {format(new Date(report.createdAt), 'MMM d, HH:mm')}
-                  </span>
-                </div>
-                <Badge
-                  variant={
-                    (urgencyColors[
-                      report.urgency as keyof typeof urgencyColors
-                    ] as any) || 'default'
-                  }
-                  className="mb-1"
-                >
-                  {report.urgency}
-                </Badge>
-                <p className="text-sm text-muted-foreground line-clamp-2">
-                  {report.summary}
-                </p>
+            {/* Filters */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Filter className="h-4 w-4" />
+                <span className="text-sm font-medium">Filters</span>
               </div>
-            ))
-          )}
+
+              <div className="space-y-1.5">
+                <Label htmlFor="urgency-filter">Urgency</Label>
+                <Select value={urgencyFilter} onValueChange={setUrgencyFilter}>
+                  <SelectTrigger id="urgency-filter">
+                    <SelectValue placeholder="Select urgency" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All urgencies</SelectItem>
+                    <SelectItem value="high (immediate)">
+                      High (immediate)
+                    </SelectItem>
+                    <SelectItem value="medium (within 24h)">
+                      Medium (within 24h)
+                    </SelectItem>
+                    <SelectItem value="low (routine)">Low (routine)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+
+          {/* Report list */}
+          <div className="flex-1 overflow-auto">
+            {filteredReports.length === 0 ? (
+              <div className="p-4 text-center text-muted-foreground">
+                No reports match your filters
+              </div>
+            ) : (
+              filteredReports.map((report) => (
+                <div
+                  key={report.id}
+                  className={cn(
+                    'p-3 border-b cursor-pointer hover:bg-muted/50 transition-colors',
+                    selectedReport.id === report.id ? 'bg-muted' : '',
+                  )}
+                  onClick={() => setSelectedReport(report)}
+                >
+                  <div className="flex justify-between items-start mb-1">
+                    <span className="font-medium">{report.fullName}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {format(new Date(report.createdAt), 'MMM d, HH:mm')}
+                    </span>
+                  </div>
+                  <Badge
+                    variant={
+                      (urgencyColors[
+                        report.urgency as keyof typeof urgencyColors
+                      ] as any) || 'default'
+                    }
+                    className="mb-1"
+                  >
+                    {report.urgency}
+                  </Badge>
+                  <p className="text-sm text-muted-foreground line-clamp-2">
+                    {report.summary}
+                  </p>
+                </div>
+              ))
+            )}
+          </div>
         </div>
       </div>
+
+      {/* backdrop when open on mobile */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-10 bg-black/50 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
 
       {/* Main content */}
       <div className="flex-1 p-6 overflow-auto">
         <div className="max-w-3xl mx-auto">
           <div className="flex justify-between items-center mb-6">
+            {/* Hamburger (mobile only) */}
+            <button
+              type="button"
+              className="p-2 rounded-md hover:bg-muted transition-colors md:hidden"
+              onClick={() => setSidebarOpen((o) => !o)}
+              aria-label="Toggle menu"
+            >
+              <Menu className="size-6" />
+            </button>
+
             <h1 className="text-2xl font-bold">Patient Report</h1>
             <Badge
               variant={
@@ -321,8 +387,31 @@ export default function DoctorDashboard({
           </div>
 
           <div className="mt-8 flex gap-4">
-            <Button>Schedule Appointment</Button>
-            <Button variant="outline">Contact Patient</Button>
+            <Button
+              onClick={() => {
+                toast.success('Appointment scheduled', {
+                  description: `Appointment for ${selectedReport.fullName} has been scheduled.`,
+                  icon: <CheckCircle className="size-4 text-green-500" />,
+                  duration: 3000,
+                });
+              }}
+            >
+              Schedule Appointment
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => {
+                toast.info('Contacting patient...', {
+                  duration: 3000,
+                  icon: '👮',
+                });
+
+                window.location.href = 'tel:117';
+              }}
+            >
+              <Phone className="size-4 mr-2" />
+              Contact Patient
+            </Button>
           </div>
         </div>
       </div>

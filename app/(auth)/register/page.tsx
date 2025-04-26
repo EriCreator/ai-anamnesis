@@ -7,8 +7,8 @@ import { useActionState, useEffect, useState } from 'react';
 import { AuthForm } from '@/components/auth-form';
 import { SubmitButton } from '@/components/submit-button';
 
-import { register, type RegisterActionState } from '../actions';
 import { toast } from '@/components/toast';
+import { register, type RegisterActionState } from '../actions';
 
 export default function Page() {
   const router = useRouter();
@@ -55,7 +55,7 @@ export default function Page() {
             Create an account with your email and password
           </p>
         </div>
-        <AuthForm action={handleSubmit} defaultEmail={email}>
+        <AuthForm action={handleSubmit} defaultEmail={email} isRegistration>
           <SubmitButton isSuccessful={isSuccessful}>Sign Up</SubmitButton>
           <p className="text-center text-sm text-gray-600 mt-4 dark:text-zinc-400">
             {'Already have an account? '}

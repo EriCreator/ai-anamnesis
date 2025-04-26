@@ -118,7 +118,6 @@ export async function POST(request: Request) {
                     !foundAnamnesis
                   ) {
                     // First time we've found the marker
-                    console.log('Anamnesis report found');
                     foundAnamnesis = true;
                     controller.enqueue({
                       type: 'text-delta',
@@ -139,14 +138,6 @@ export async function POST(request: Request) {
                 // For step-start, step-finish, and finish chunks, pass through unchanged
                 else {
                   controller.enqueue(chunk);
-
-                  // For finish chunks, check if we have a complete report
-                  if (chunk.type === 'finish' && foundAnamnesis) {
-                    console.log(
-                      'Finished with anamnesis detected, full content length:',
-                      originalContent.length,
-                    );
-                  }
                 }
               },
             });
@@ -191,24 +182,10 @@ export async function POST(request: Request) {
                   responseMessages: response.messages,
                 });
 
-                // console.log('response', response);
-                // console.log('response.messages', response.messages);
-                // console.log('assistantMessage', assistantMessage);
-                // console.log('assistantId', assistantId);
-                // console.log('assistantMessage.parts', assistantMessage.parts);
-
-                // const text =
-                //   assistantMessage.parts?.find(
-                //     (p): p is { type: 'text'; text: string } =>
-                //       p.type === 'text' && 'text' in p,
-                //   )?.text ?? '';
-
                 if (
                   foundAnamnesis &&
                   originalContent.includes('<ANAMNESIS_REPORT>')
                 ) {
-                  console.log('Anamnesis report found');
-                  console.log('text', originalContent);
                   const report = extractAnamnesis(originalContent);
                   if (!report) {
                     console.error('No anamnesis report found');

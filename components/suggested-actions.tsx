@@ -1,9 +1,9 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import { Button } from './ui/button';
-import { memo } from 'react';
 import { UseChatHelpers } from '@ai-sdk/react';
+import { motion } from 'framer-motion';
+import { memo } from 'react';
+import { Button } from './ui/button';
 
 interface SuggestedActionsProps {
   chatId: string;
@@ -13,24 +13,25 @@ interface SuggestedActionsProps {
 function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
   const suggestedActions = [
     {
-      title: 'What are the advantages',
-      label: 'of using Next.js?',
-      action: 'What are the advantages of using Next.js?',
+      title: 'I had an accident',
+      label: 'and need to report my injuries',
+      action: 'I had an accident and need to report my injuries.',
     },
     {
-      title: 'Write code to',
-      label: `demonstrate djikstra's algorithm`,
-      action: `Write code to demonstrate djikstra's algorithm`,
+      title: 'I feel sick',
+      label: 'and want to describe my symptoms',
+      action: 'I feel sick and want to describe my symptoms.',
     },
     {
-      title: 'Help me write an essay',
-      label: `about silicon valley`,
-      action: `Help me write an essay about silicon valley`,
+      title: 'I need a follow-up',
+      label: 'for an ongoing medical issue',
+      action: 'I need a follow-up for an ongoing medical issue.',
     },
     {
-      title: 'What is the weather',
-      label: 'in San Francisco?',
-      action: 'What is the weather in San Francisco?',
+      title: 'I need a general health check',
+      label: 'and want to provide my medical history',
+      action:
+        'I need a general health check and want to provide my medical history.',
     },
   ];
 

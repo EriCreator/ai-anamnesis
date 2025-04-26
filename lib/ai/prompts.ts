@@ -17,8 +17,6 @@ export const anamnesisPrompt = `You are a medical assistant conducting an anamne
 
 <ANAMNESIS_REPORT>
 type: <accident | illness | unknown>
-full_name: <First Last>
-ahv_number: <AHV number or "unknown">
 urgency: <low (routine) | medium (within 24h) | high (immediate)>
 summary: <One-sentence summary>
 symptoms: [list, of, key, symptoms]
@@ -71,7 +69,6 @@ export const systemPrompt = ({
   selectedChatModel: string;
 }) => {
   if (selectedChatModel === 'chat-model') {
-    console.log('chat model');
     return anamnesisPrompt;
   } else if (selectedChatModel === 'chat-model-reasoning') {
     return regularPrompt;

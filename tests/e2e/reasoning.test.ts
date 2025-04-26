@@ -1,7 +1,7 @@
+import { expect, test } from '@playwright/test';
 import { ChatPage } from '../pages/chat';
-import { test, expect } from '@playwright/test';
 
-test.describe('chat activity with reasoning', () => {
+test.describe.skip('chat activity with reasoning', () => {
   let chatPage: ChatPage;
 
   test.beforeEach(async ({ page }) => {

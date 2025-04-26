@@ -4,25 +4,25 @@ import type { Attachment, UIMessage } from 'ai';
 import cx from 'classnames';
 import type React from 'react';
 import {
-  useRef,
-  useEffect,
-  useState,
+  memo,
   useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ChangeEvent,
   type Dispatch,
   type SetStateAction,
-  type ChangeEvent,
-  memo,
 } from 'react';
 import { toast } from 'sonner';
 import { useLocalStorage, useWindowSize } from 'usehooks-ts';
 
+import type { UseChatHelpers } from '@ai-sdk/react';
+import equal from 'fast-deep-equal';
 import { ArrowUpIcon, PaperclipIcon, StopIcon } from './icons';
 import { PreviewAttachment } from './preview-attachment';
+import { SuggestedActions } from './suggested-actions';
 import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
-import { SuggestedActions } from './suggested-actions';
-import equal from 'fast-deep-equal';
-import type { UseChatHelpers } from '@ai-sdk/react';
 
 function PureMultimodalInput({
   chatId,
@@ -37,6 +37,7 @@ function PureMultimodalInput({
   append,
   handleSubmit,
   className,
+  disabled,
 }: {
   chatId: string;
   input: UseChatHelpers['input'];
@@ -50,6 +51,7 @@ function PureMultimodalInput({
   append: UseChatHelpers['append'];
   handleSubmit: UseChatHelpers['handleSubmit'];
   className?: string;
+  disabled?: boolean;
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { width } = useWindowSize();
@@ -189,6 +191,7 @@ function PureMultimodalInput({
 
       <input
         type="file"
+        disabled={disabled}
         className="fixed -top-4 -left-4 size-0.5 opacity-0 pointer-events-none"
         ref={fileInputRef}
         multiple
@@ -221,6 +224,7 @@ function PureMultimodalInput({
 
       <Textarea
         data-testid="multimodal-input"
+        disabled={disabled}
         ref={textareaRef}
         placeholder="Send a message..."
         value={input}
@@ -249,7 +253,11 @@ function PureMultimodalInput({
       />
 
       <div className="absolute bottom-0 p-2 w-fit flex flex-row justify-start">
-        <AttachmentsButton fileInputRef={fileInputRef} status={status} />
+        <AttachmentsButton
+          fileInputRef={fileInputRef}
+          status={status}
+          disabled={disabled}
+        />
       </div>
 
       <div className="absolute bottom-0 right-0 p-2 w-fit flex flex-row justify-end">
@@ -281,9 +289,11 @@ export const MultimodalInput = memo(
 function PureAttachmentsButton({
   fileInputRef,
   status,
+  disabled,
 }: {
   fileInputRef: React.MutableRefObject<HTMLInputElement | null>;
   status: UseChatHelpers['status'];
+  disabled?: boolean;
 }) {
   return (
     <Button
@@ -293,7 +303,7 @@ function PureAttachmentsButton({
         event.preventDefault();
         fileInputRef.current?.click();
       }}
-      disabled={status !== 'ready'}
+      disabled={disabled || status !== 'ready'}
       variant="ghost"
     >
       <PaperclipIcon size={14} />
