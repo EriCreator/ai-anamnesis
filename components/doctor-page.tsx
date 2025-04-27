@@ -1,8 +1,15 @@
 'use client';
 
 import { format } from 'date-fns';
-import { CheckCircle, Filter, Menu, Phone, Search } from 'lucide-react';
-import { useState } from 'react';
+import {
+  AlertTriangle,
+  CheckCircle,
+  Filter,
+  Menu,
+  Phone,
+  Search,
+} from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -126,7 +133,12 @@ export default function DoctorDashboard({
   const [urgencyFilter, setUrgencyFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const { theme, setTheme } = useTheme();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Filter reports based on urgency, date, and search query
   const filteredReports = reports.filter((report) => {
@@ -176,10 +188,15 @@ export default function DoctorDashboard({
                       className="p-2 rounded-md hover:bg-muted transition-colors"
                       aria-label="Toggle dark mode"
                     >
-                      {theme === 'dark' ? (
-                        <Sun className="size-4" />
+                      {mounted ? (
+                        theme === 'dark' ? (
+                          <Sun className="size-4" />
+                        ) : (
+                          <Moon className="size-4" />
+                        )
                       ) : (
-                        <Moon className="size-4" />
+                        // Render an empty placeholder during server-side rendering
+                        <div className="size-4" />
                       )}
                     </button>
                   </TooltipTrigger>
@@ -365,9 +382,27 @@ export default function DoctorDashboard({
               </div>
             </div>
 
-            <div>
+            {/* Regulatory notice with enhanced styling */}
+            <div className="border-2 border-yellow-300 dark:border-yellow-700 bg-yellow-50 dark:bg-yellow-950/30 rounded-lg p-4 my-6 flex items-start gap-3">
+              <AlertTriangle className="size-5 text-yellow-600 dark:text-yellow-500 shrink-0 mt-0.5" />
+              <div className="text-sm text-muted-foreground">
+                <p className="font-medium text-yellow-800 dark:text-yellow-400 mb-0.5">
+                  Regulatory Notice
+                </p>
+                <p>
+                  We are not allowed to show AI-generated treatment suggestions
+                  to doctors as this would classify our system as a medical
+                  device under healthcare regulations.
+                </p>
+              </div>
+            </div>
+
+            {/* Uncomment this section if you want to show suggested medicaments and treatment */}
+
+            {/* <div>
               <h3 className="text-lg font-semibold mb-2">
                 Suggested Medicaments
+                <InfoIcon />
               </h3>
               <p className="text-muted-foreground">
                 {selectedReport.suggestedMedicaments === 'null'
@@ -383,7 +418,7 @@ export default function DoctorDashboard({
               <p className="text-muted-foreground">
                 {selectedReport.suggestedTreatment}
               </p>
-            </div>
+            </div> */}
           </div>
 
           <div className="mt-8 flex gap-4">

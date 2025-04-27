@@ -20,8 +20,6 @@ type: <accident | illness | unknown>
 urgency: <low (routine) | medium (within 24h) | high (immediate)>
 summary: <One-sentence summary>
 symptoms: [list, of, key, symptoms]
-suggested_medicaments: [list or null]
-suggested_treatment: <Recommendation or null>
 </ANAMNESIS_REPORT>
 
 ✅ Always include this exact report at the end of the conversation  
