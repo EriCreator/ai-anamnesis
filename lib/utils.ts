@@ -179,8 +179,8 @@ interface AnamnesisReport {
   urgency: string;
   summary: string;
   symptoms: string;
-  suggestedMedicaments?: string;
-  suggestedTreatment?: string;
+  suggestedMedicaments: string;
+  suggestedTreatment: string;
 }
 
 export function extractAnamnesis(message: string): AnamnesisReport | null {
