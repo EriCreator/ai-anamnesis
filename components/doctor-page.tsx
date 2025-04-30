@@ -127,7 +127,12 @@ export default function DoctorDashboard({
     createdAt: Date;
   }[];
 }) {
-  const allReports = [...sampleReports, ...initialReports];
+  const allReports = [...sampleReports, ...initialReports].sort((a, b) => {
+    const dateA = new Date(a.createdAt);
+    const dateB = new Date(b.createdAt);
+
+    return dateB.getTime() - dateA.getTime();
+  });
   const [reports, _] = useState(allReports);
   const [selectedReport, setSelectedReport] = useState(allReports[0]);
   const [urgencyFilter, setUrgencyFilter] = useState('all');
