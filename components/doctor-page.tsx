@@ -417,9 +417,12 @@ export default function DoctorDashboard({
                   Regulatory Notice
                 </p>
                 <p>
-                  We are not allowed to show AI-generated treatment suggestions
-                  to doctors as this would classify our system as a medical
-                  device under healthcare regulations.
+                  This tool is intended to be used only by licensed healthcare
+                  professionals to assist in the first contact with the
+                  patience, doing an anamnesis and summarising symptoms. This
+                  tool do not provide any kind of diagnosis and do not suggest
+                  or prescribe medicaments and treatments. The diagnosis will
+                  always has to be made by the healthcare professionals.
                 </p>
               </div>
             </div>
