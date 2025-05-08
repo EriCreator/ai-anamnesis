@@ -181,6 +181,7 @@ interface AnamnesisReport {
   symptoms: string;
   suggestedMedicaments: string;
   suggestedTreatment: string;
+  painLevel: string;
 }
 
 export function extractAnamnesis(message: string): AnamnesisReport | null {
@@ -199,7 +200,8 @@ export function extractAnamnesis(message: string): AnamnesisReport | null {
     urgency: grab('urgency'),
     summary: grab('summary'),
     symptoms: grab('symptoms'),
-    suggestedMedicaments: 'null',
-    suggestedTreatment: '',
+    suggestedMedicaments: grab('suggested_medicaments'),
+    suggestedTreatment: grab('suggested_treatment'),
+    painLevel: grab('pain_level'),
   };
 }

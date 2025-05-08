@@ -167,6 +167,7 @@ export const anamnesisReport = pgTable('AnamnesisReport', {
   symptoms: text('symptoms').notNull(),
   suggestedMedicaments: text('suggestedMedicaments').notNull(),
   suggestedTreatment: text('suggestedTreatment').notNull(),
+  painLevel: varchar('painLevel').notNull().default('unknown'),
   userId: uuid('userId')
     .notNull()
     .references(() => user.id),

@@ -1,0 +1,1 @@
+ALTER TABLE "AnamnesisReport" ADD COLUMN "painLevel" varchar NOT NULL DEFAULT 'unknown';

@@ -459,6 +459,7 @@ export async function saveAnamnesisReport(
       symptoms: data.symptoms,
       suggestedMedicaments: data.suggestedMedicaments,
       suggestedTreatment: data.suggestedTreatment,
+      painLevel: data.painLevel,
       userId: data.userId,
     });
   } catch (error) {
