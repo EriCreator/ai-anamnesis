@@ -23,9 +23,12 @@ export default function PrivacyPage() {
               Disclaimer
             </p>
             <p className="text-sm">
-              {`This is only a draft for our university project for the course AI:
-              Law and Technology, it's not a real Privacy Policy and it's not
-              part of the content of the paper.`}
+              This tool is intended to be used only by licensed healthcare
+              professionals to assist in the first contact with the patience,
+              doing an anamnesis and summarising symptoms. This tool do not
+              provide any kind of diagnosis and do not suggest or prescribe
+              medicaments and treatments. The diagnosis will always has to be
+              made by the healthcare professionals.
             </p>
           </div>
 

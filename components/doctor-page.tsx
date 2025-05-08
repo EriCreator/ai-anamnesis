@@ -45,6 +45,7 @@ const sampleReports = [
     suggestedMedicaments: 'Antiemetic, pain relief',
     suggestedTreatment:
       'Immediate evaluation for appendicitis or other acute abdominal conditions.',
+    painLevel: '8',
     createdAt: '2023-04-24T08:30:00',
   },
   {
@@ -59,6 +60,7 @@ const sampleReports = [
     suggestedMedicaments: 'null',
     suggestedTreatment:
       'Further examination and potential chest X-ray to rule out respiratory issues.',
+    painLevel: '5',
     createdAt: '2023-04-23T14:15:00',
   },
   {
@@ -72,6 +74,7 @@ const sampleReports = [
     symptoms: 'none reported',
     suggestedMedicaments: 'Continue current diabetes medication',
     suggestedTreatment: 'Regular monitoring and lifestyle counseling.',
+    painLevel: '0',
     createdAt: '2023-04-22T10:45:00',
   },
   {
@@ -85,6 +88,7 @@ const sampleReports = [
     symptoms: 'headache, photosensitivity',
     suggestedMedicaments: 'Analgesics',
     suggestedTreatment: 'Evaluation for migraine or tension headache.',
+    painLevel: '6',
     createdAt: '2023-04-21T16:20:00',
   },
   {
@@ -99,6 +103,7 @@ const sampleReports = [
     suggestedMedicaments: 'null',
     suggestedTreatment:
       'Immediate cardiac evaluation including ECG and cardiac enzymes.',
+    painLevel: '7',
     createdAt: '2023-04-20T09:10:00',
   },
 ];
@@ -123,6 +128,7 @@ export default function DoctorDashboard({
     symptoms: string;
     suggestedMedicaments: string;
     suggestedTreatment: string;
+    painLevel: string;
     userId: string;
     createdAt: Date;
   }[];
@@ -206,9 +212,9 @@ export default function DoctorDashboard({
                     </button>
                   </TooltipTrigger>
                   <TooltipContent
-                    side="right"
+                    side="bottom"
                     align="end"
-                    className="z-50 text-xs font-medium"
+                    className="bg-secondary text-secondary-foreground px-3 py-1.5 text-xs rounded-md border shadow-md z-20"
                   >
                     {theme === 'dark' ? 'Light mode' : 'Dark mode'}
                   </TooltipContent>
@@ -320,16 +326,29 @@ export default function DoctorDashboard({
             </button>
 
             <h1 className="text-2xl font-bold">Patient Report</h1>
-            <Badge
-              variant={
-                (urgencyColors[
-                  selectedReport.urgency as keyof typeof urgencyColors
-                ] as any) || 'default'
-              }
-              className="text-sm"
-            >
-              {selectedReport.urgency}
-            </Badge>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Badge
+                    variant={
+                      (urgencyColors[
+                        selectedReport.urgency as keyof typeof urgencyColors
+                      ] as any) || 'default'
+                    }
+                    className="text-sm"
+                  >
+                    {selectedReport.urgency}
+                  </Badge>
+                </TooltipTrigger>
+                <TooltipContent
+                  side="top"
+                  align="center"
+                  className="bg-secondary text-secondary-foreground px-3 py-1.5 text-xs rounded-md border shadow-md"
+                >
+                  AI-estimated urgency level
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
 
           <div className="grid grid-cols-2 gap-4 mb-6">
@@ -347,9 +366,11 @@ export default function DoctorDashboard({
             </div>
             <div>
               <h3 className="text-sm font-medium text-muted-foreground mb-1">
-                Report Type
+                Pain Level (1-10)
               </h3>
-              <p className="font-medium capitalize">{selectedReport.type}</p>
+              <p className="font-medium capitalize">
+                {selectedReport.painLevel}
+              </p>
             </div>
             <div>
               <h3 className="text-sm font-medium text-muted-foreground mb-1">
