@@ -24,9 +24,9 @@ export default function TermsPage() {
               Disclaimer
             </p>
             <p className="text-sm">
-              This is only a draft for our university project for the course AI:
+              {`This is only a draft for our university project for the course AI:
               Law and Technology, it's not a real ToS and it's not part of the
-              content of the paper.
+              content of the paper.`}
             </p>
           </div>
 
@@ -36,13 +36,13 @@ export default function TermsPage() {
           </p>
 
           <p>
-            Our AI-powered anamnesis assistant ("Service") is a web application
+            {`Our AI-powered anamnesis assistant ("Service") is a web application
             designed to do the first anamnesis and gather information to forward
             to the doctor to assist him in the preliminary consultation process.
             To use this Service you must agree to these Terms of Service, the
             use of the Service is not compulsory and in case you do not accept
             the conditions, we recommend you to contact directly your doctor to
-            make an appointment.
+            make an appointment.`}
           </p>
 
           <h2>1. Purpose of the Service</h2>

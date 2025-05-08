@@ -23,9 +23,9 @@ export default function PrivacyPage() {
               Disclaimer
             </p>
             <p className="text-sm">
-              This is only a draft for our university project for the course AI:
+              {`This is only a draft for our university project for the course AI:
               Law and Technology, it's not a real Privacy Policy and it's not
-              part of the content of the paper.
+              part of the content of the paper.`}
             </p>
           </div>
 
