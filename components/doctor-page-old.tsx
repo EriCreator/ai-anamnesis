@@ -2,7 +2,6 @@
 
 import { format } from 'date-fns';
 import {
-  AlertTriangle,
   CheckCircle,
   Filter,
   Menu,
@@ -116,7 +115,7 @@ const urgencyColors = {
   'low (routine)': 'green',
 };
 
-export default function DoctorDashboard({
+export default function DoctorDashboardOld({
   initialReports,
 }: {
   initialReports: {
@@ -367,11 +366,9 @@ export default function DoctorDashboard({
             </div>
             <div>
               <h3 className="text-sm font-medium text-muted-foreground mb-1">
-                Pain Level (1-10)
+                Report Type
               </h3>
-              <p className="font-medium capitalize">
-                {selectedReport.painLevel}
-              </p>
+              <p className="font-medium capitalize">{selectedReport.type}</p>
             </div>
             <div>
               <h3 className="text-sm font-medium text-muted-foreground mb-1">
@@ -410,7 +407,7 @@ export default function DoctorDashboard({
             </div>
 
             {/* Regulatory notice with enhanced styling */}
-            <div className="border-2 border-yellow-300 dark:border-yellow-700 bg-yellow-50 dark:bg-yellow-950/30 rounded-lg p-4 my-6 flex items-start gap-3">
+            {/* <div className="border-2 border-yellow-300 dark:border-yellow-700 bg-yellow-50 dark:bg-yellow-950/30 rounded-lg p-4 my-6 flex items-start gap-3">
               <AlertTriangle className="size-5 text-yellow-600 dark:text-yellow-500 shrink-0 mt-0.5" />
               <div className="text-sm text-muted-foreground">
                 <p className="font-medium text-yellow-800 dark:text-yellow-400 mb-0.5">
@@ -422,14 +419,11 @@ export default function DoctorDashboard({
                   device under healthcare regulations.
                 </p>
               </div>
-            </div>
+            </div> */}
 
-            {/* Uncomment this section if you want to show suggested medicaments and treatment */}
-
-            {/* <div>
+            <div>
               <h3 className="text-lg font-semibold mb-2">
                 Suggested Medicaments
-                <InfoIcon />
               </h3>
               <p className="text-muted-foreground">
                 {selectedReport.suggestedMedicaments === 'null'
@@ -445,7 +439,7 @@ export default function DoctorDashboard({
               <p className="text-muted-foreground">
                 {selectedReport.suggestedTreatment}
               </p>
-            </div> */}
+            </div>
           </div>
 
           <div className="mt-8 flex gap-4">

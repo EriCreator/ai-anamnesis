@@ -22,7 +22,8 @@ export const Greeting = () => {
         transition={{ delay: 0.6 }}
         className="text-2xl text-zinc-500"
       >
-        How can I help you today?
+        {`I'm an AI assistant here to support your doctor with the initial
+        anamnesis. How can I help you today?`}
       </motion.div>
     </div>
   );
