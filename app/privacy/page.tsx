@@ -18,6 +18,17 @@ export default function PrivacyPage() {
       {/* Document container */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md max-w-3xl w-full p-8 mb-8">
         <div className="prose dark:prose-invert mx-auto">
+          <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded p-4 mb-8">
+            <p className="text-sm text-blue-800 dark:text-blue-300 font-medium">
+              Disclaimer
+            </p>
+            <p className="text-sm">
+              This is only a draft for our university project for the course AI:
+              Law and Technology, it's not a real Privacy Policy and it's not
+              part of the content of the paper.
+            </p>
+          </div>
+
           {/* Introduction */}
           <p className="text-center text-sm text-gray-500 dark:text-gray-400 mb-8">
             This Privacy Policy describes how we collect, use, and handle your
