@@ -173,7 +173,7 @@ export default function DoctorDashboard({
   });
 
   return (
-    <div className="flex h-screen bg-background">
+    <div className="flex h-[100vdh] bg-background">
       {/* Sidebar */}
       <div
         className={`
