@@ -177,13 +177,13 @@ export default function DoctorDashboard({
       {/* Sidebar */}
       <div
         className={`
-          fixed inset-y-0 left-0 z-20 w-[350px] border-r bg-background flex flex-col h-full
+          fixed inset-y-0 left-0 z-20 w-[350px] border-r bg-background flex flex-col h-[100vdh]
           transition-transform duration-200
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}  
           md:static md:translate-x-0                        
         `}
       >
-        <div className="w-[350px] border-r flex flex-col h-full">
+        <div className="w-[350px] border-r flex flex-col h-[100vdh]">
           <div className="p-4 border-b">
             <div className="flex justify-between items-center mb-4">
               <h2 className="font-semibold text-lg">Patient Reports</h2>
