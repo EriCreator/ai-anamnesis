@@ -5,6 +5,7 @@ import {
   AlertTriangle,
   CheckCircle,
   Filter,
+  LogOut,
   Menu,
   Moon,
   Phone,
@@ -26,8 +27,8 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
-// Add these imports at the top of the file
 import { TooltipContent, TooltipProvider } from '@radix-ui/react-tooltip';
+import { signOut } from 'next-auth/react';
 import { useTheme } from 'next-themes';
 import { toast } from 'sonner';
 import { Tooltip, TooltipTrigger } from './ui/tooltip';
@@ -179,7 +180,7 @@ export default function DoctorDashboard({
         className={`
           fixed inset-y-0 left-0 z-20 w-[350px] border-r bg-background flex flex-col h-[100vdh]
           transition-transform duration-200
-          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}  
+          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
           md:static md:translate-x-0                        
         `}
       >
@@ -188,41 +189,69 @@ export default function DoctorDashboard({
             <div className="flex justify-between items-center mb-4">
               <h2 className="font-semibold text-lg">Patient Reports</h2>
 
-              {/* Dark mode toggle button */}
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setTheme(theme === 'dark' ? 'light' : 'dark')
-                      }
-                      className="p-2 rounded-md hover:bg-muted transition-colors"
-                      aria-label="Toggle dark mode"
+              <div className="flex items-center gap-2">
+                {/* Sign out button */}
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          signOut({
+                            redirectTo: '/',
+                          });
+                        }}
+                        className="p-2 rounded-md hover:bg-muted transition-colors"
+                        aria-label="Sign out"
+                      >
+                        <LogOut className="size-4" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent
+                      side="bottom"
+                      align="end"
+                      className="bg-secondary text-secondary-foreground px-3 py-1.5 text-xs rounded-md border shadow-md z-20"
                     >
-                      {mounted ? (
-                        theme === 'dark' ? (
-                          <Sun className="size-4" />
-                        ) : (
-                          <Moon className="size-4" />
-                        )
-                      ) : (
-                        // Render an empty placeholder during server-side rendering
-                        <div className="size-4" />
-                      )}
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent
-                    side="bottom"
-                    align="end"
-                    className="bg-secondary text-secondary-foreground px-3 py-1.5 text-xs rounded-md border shadow-md z-20"
-                  >
-                    {theme === 'dark' ? 'Light mode' : 'Dark mode'}
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
+                      Sign out
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
 
+                {/* Dark mode toggle button */}
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setTheme(theme === 'dark' ? 'light' : 'dark')
+                        }
+                        className="p-2 rounded-md hover:bg-muted transition-colors"
+                        aria-label="Toggle dark mode"
+                      >
+                        {mounted ? (
+                          theme === 'dark' ? (
+                            <Sun className="size-4" />
+                          ) : (
+                            <Moon className="size-4" />
+                          )
+                        ) : (
+                          // Render an empty placeholder during server-side rendering
+                          <div className="size-4" />
+                        )}
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent
+                      side="bottom"
+                      align="end"
+                      className="bg-secondary text-secondary-foreground px-3 py-1.5 text-xs rounded-md border shadow-md z-20"
+                    >
+                      {theme === 'dark' ? 'Light mode' : 'Dark mode'}
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+            </div>
             {/* Search */}
             <div className="relative mb-4">
               <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />

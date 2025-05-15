@@ -12,12 +12,33 @@ export const authConfig = {
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
+      const isDoctor = isLoggedIn && auth.user?.email === 'doctor@email.com';
       const isOnChat = nextUrl.pathname.startsWith('/');
       const isOnRegister = nextUrl.pathname.startsWith('/register');
       const isOnLogin = nextUrl.pathname.startsWith('/login');
       const isOnTermsOrPrivacy =
         nextUrl.pathname.startsWith('/terms') ||
         nextUrl.pathname.startsWith('/privacy');
+      const isAuthApi = nextUrl.pathname.startsWith('/api/auth');
+
+      const isDoctorRoute =
+        nextUrl.pathname.startsWith('/doctor') ||
+        nextUrl.pathname.startsWith('/doctor_old');
+
+      if (isAuthApi) {
+        return true;
+      }
+
+      if (isDoctorRoute) {
+        if (isDoctor) {
+          return true;
+        }
+        return false;
+      }
+
+      if (isDoctor && !isDoctorRoute) {
+        return Response.redirect(new URL('/doctor', nextUrl as unknown as URL));
+      }
 
       if (isLoggedIn && (isOnLogin || isOnRegister)) {
         return Response.redirect(new URL('/', nextUrl as unknown as URL));
