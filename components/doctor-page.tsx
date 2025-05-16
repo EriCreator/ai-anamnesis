@@ -153,6 +153,18 @@ export default function DoctorDashboard({
     setMounted(true);
   }, []);
 
+  useEffect(() => {
+    if (sidebarOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [sidebarOpen]);
+
   // Filter reports based on urgency, date, and search query
   const filteredReports = reports.filter((report) => {
     // Filter by urgency
@@ -174,17 +186,17 @@ export default function DoctorDashboard({
   });
 
   return (
-    <div className="flex h-[100vdh] bg-background">
+    <div className="flex h-dvh bg-background">
       {/* Sidebar */}
       <div
         className={`
-          fixed inset-y-0 left-0 z-20 w-[350px] border-r bg-background flex flex-col h-[100vdh]
+          fixed inset-y-0 left-0 z-20 w-[350px] border-r bg-background flex flex-col h-dvh
           transition-transform duration-200
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
           md:static md:translate-x-0                        
         `}
       >
-        <div className="w-[350px] border-r flex flex-col h-[100vdh]">
+        <div className="w-[350px] border-r flex flex-col h-dvh">
           <div className="p-4 border-b">
             <div className="flex justify-between items-center mb-4">
               <h2 className="font-semibold text-lg">Patient Reports</h2>
@@ -254,7 +266,7 @@ export default function DoctorDashboard({
             </div>
             {/* Search */}
             <div className="relative mb-4">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-2 top-2.5 size-4 text-muted-foreground" />
               <Input
                 placeholder="Search reports..."
                 className="pl-8"
@@ -266,7 +278,7 @@ export default function DoctorDashboard({
             {/* Filters */}
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <Filter className="h-4 w-4" />
+                <Filter className="size-4" />
                 <span className="text-sm font-medium">Filters</span>
               </div>
 
