@@ -185,11 +185,48 @@ interface AnamnesisReport {
 }
 
 export function extractAnamnesis(message: string): AnamnesisReport | null {
-  const beforeClose = message.split(/<\/ANAMNESIS_REPORT>/i)[0];
+    // Determine which format we're dealing with
+    const hasNormalOpening = message.includes('<ANAMNESIS_REPORT>');
+    const hasDoubleClosing = message.includes('</ANAMNESIS_REPORT>');
+    
+      // If neither format is found, return null
+  if (!hasNormalOpening && !hasDoubleClosing) {
+    return {
+      type: 'error while parsing',
+      fullName: 'error while parsing',
+      ahvNumber: 'error while parsing',
+      urgency: 'error while parsing',
+      summary: 'error while parsing',
+      symptoms: 'error while parsing',
+      suggestedMedicaments: 'error while parsing',
+      suggestedTreatment: 'error while parsing',
+      painLevel: 'error while parsing',
+    };
+  }
+
+  let reportContent = '';
+  
+  if (hasNormalOpening) {
+    // Standard format: <ANAMNESIS_REPORT> ... </ANAMNESIS_REPORT>
+    const parts = message.split(/<ANAMNESIS_REPORT>/i);
+    if (parts.length > 1) {
+      reportContent = parts[1].split(/<\/ANAMNESIS_REPORT>/i)[0];
+    }
+  } else {
+    // Erroneous format: </ANAMNESIS_REPORT> ... </ANAMNESIS_REPORT>
+    const parts = message.split(/<\/ANAMNESIS_REPORT>/i);
+    if (parts.length > 2) {
+      // Skip the first part (before first closing tag) and get content until next closing tag
+      reportContent = parts[1];
+    } else if (parts.length > 1) {
+      // If there's only one closing tag, use everything after it
+      reportContent = parts[0]; // The text to parse will be before the closing tag
+    }
+  }
 
   const grab = (key: string) => {
     const rx = new RegExp(`${key}:\\s*([\\s\\S]*?)(?=\\n[a-z_]+:\\s*|$)`, 'i');
-    const m = beforeClose.match(rx);
+    const m = reportContent.match(rx);
     return (m ? m[1] : '').trim().replace(/^\[|\]$/g, '');
   };
 

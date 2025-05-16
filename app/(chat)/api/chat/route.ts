@@ -111,10 +111,13 @@ export async function POST(request: Request) {
                 if (chunk.type === 'text-delta' && chunk.textDelta) {
                   // Save original content for database processing
                   originalContent += chunk.textDelta;
+                  // Check if accumulated content contains either marker pattern
+                  const normalPattern = '<ANAMNESIS_REPORT>';
+                  const doubleClosingPattern = '</ANAMNESIS_REPORT>';
 
-                  // Check if accumulated content contains the marker
                   if (
-                    originalContent.includes('<ANAMNESIS_REPORT>') &&
+                    (originalContent.includes(normalPattern) ||
+                    originalContent.includes(doubleClosingPattern)) &&
                     !foundAnamnesis
                   ) {
                     // First time we've found the marker
@@ -184,7 +187,8 @@ export async function POST(request: Request) {
 
                 if (
                   foundAnamnesis &&
-                  originalContent.includes('<ANAMNESIS_REPORT>')
+                  (originalContent.includes('<ANAMNESIS_REPORT>') ||
+                  originalContent.includes('</ANAMNESIS_REPORT>'))
                 ) {
                   const report = extractAnamnesis(originalContent);
                   if (!report) {
